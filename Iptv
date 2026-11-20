@@ -1,0 +1,24 @@
+import urllib.request
+
+# Fontes públicas de canais abertos (ex: iptv-org Brasil)
+urls = [
+    "https://github.io",
+    # Adicione outras URLs de listas .m3u públicas aqui se quiser
+]
+
+conteudo_final = ["#EXTM3U\n"]
+
+for url in urls:
+    try:
+        req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+        with urllib.request.urlopen(req) as response:
+            linhas = response.read().decode('utf-8').splitlines()
+            for linha in linhas:
+                # Ignora cabeçalhos duplicados das listas originais
+                if not linha.startswith("#EXTM3U"):
+                    conteudo_final.append(linha + "\n")
+    except Exception as e:
+        print(f"Erro ao baixar {url}: {e}")
+
+with open("lista_final.m3u", "w", encoding="utf-8") as f:
+    f.writelines(conteudo_final)
